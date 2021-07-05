@@ -1,4 +1,4 @@
-# testwork_nethernite
+# testwork
 
 ## Project setup
 ```
