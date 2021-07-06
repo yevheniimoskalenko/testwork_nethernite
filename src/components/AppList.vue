@@ -13,36 +13,6 @@
       total-visible="7"
       :length="totalItems"
     ></v-pagination>
-    <v-dialog v-model="opens" scrollable max-width="1024px">
-      <v-card>
-        <v-card-title class="teal white--text">
-          test<v-icon class="white--text close-icon" @click="close">
-            mdi-close
-          </v-icon>
-        </v-card-title>
-        <v-divider />
-        <v-card-subtitle class="mt-4">
-          <v-row>
-            <v-col cols="9">
-              <v-btn
-                class="text-lowercase text-wrap"
-                small
-                depressed
-                color="info"
-                @click.prevent="openInNewLinkTab('http://localhost:8080')"
-              >
-                <v-icon class="mr-2"> mdi-open-in-new </v-icon>
-                | http://localhost:8080
-              </v-btn>
-            </v-col>
-            <v-col class="text-right" cols="3">
-              <v-icon class="mr-2">mdi-package</v-icon> 3.3.2
-            </v-col>
-          </v-row>
-        </v-card-subtitle>
-      </v-card>
-    </v-dialog>
-    <v-btn @click="dialogs">1 </v-btn>
   </div>
 </template>
 <script>
@@ -52,7 +22,6 @@ export default {
     return {
       page: 1,
       isLoading: false,
-      opens: true,
     };
   },
   props: {
@@ -62,19 +31,6 @@ export default {
   },
   components: {
     AppListItem,
-  },
-  methods: {
-    close() {
-      this.isOpen = false;
-    },
-    openInNewLinkTab(link) {
-      if (link) {
-        window.open(link, "_blank");
-      }
-    },
-    dialogs() {
-      this.$store.dispatch("fetchPackage", { text: "JQ", version: "0.0.1" });
-    },
   },
   computed: {
     searchItems() {

@@ -5,6 +5,7 @@ const jsDelivrApi = createApi(JSDELIVR_API_URL);
 const npmApi = createApi(NPM_API_URL);
 
 const searchCache = new Map();
+const packageCache = new Map();
 
 export default {
   state: {
@@ -12,6 +13,7 @@ export default {
     page: 1,
     perPage: 10,
     total: null,
+    currentPackage: null,
   },
   getters: {
     tableItems: (state) => state.listResult,
@@ -22,6 +24,7 @@ export default {
       }
       return lastPage;
     },
+    viewDetail: (state) => state.currentPackage,
   },
   mutations: {
     SET_LIST(state, payload) {
@@ -32,6 +35,9 @@ export default {
     },
     SET_SEARCH(state, payload) {
       state.total = payload;
+    },
+    SET_CURRENT_PACKAGE(state, payload) {
+      state.currentPackage = payload;
     },
   },
   actions: {
@@ -63,21 +69,18 @@ export default {
       searchCache.set(searchKey, searchResults);
     },
 
-    async fetchPackage({ commit }, { name, version }) {
+    async fetchPackage(
+      { commit },
+      { name, version, description, links, author }
+    ) {
       const packageKey = `${name}@${version}`;
 
       const cached = packageCache.get(packageKey);
-      const packageCache = new Map();
-
       if (cached) {
         commit("SET_CURRENT_PACKAGE", cached);
         return;
       }
 
-      // commit("SET_CURRENT_PACKAGE", {
-      //   name,
-      //   version,
-      // });
       try {
         const promises = [
           jsDelivrApi.get(`/package/npm/${name}`),
@@ -93,8 +96,12 @@ export default {
           statsData: result[2],
           badge: `https://data.jsdelivr.com/v1/package/npm/${name}/badge`,
         };
-        console.log(packageData);
-        // commit("SET_CURRENT_PACKAGE", packageData);
+        await commit("SET_CURRENT_PACKAGE", {
+          packageData,
+          description,
+          links,
+          author,
+        });
         packageCache.set(packageKey, packageData);
       } catch (e) {
         console.log(e);
